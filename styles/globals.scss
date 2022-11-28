@@ -1,0 +1,81 @@
+@use "./utilities" as *;
+@use "./pages" as *;
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  font-family: $body-family;
+  font-weight: 500;
+  color: $dark-text;
+  width: 100%;
+  height: 100%;
+  scroll-behavior: smooth;
+
+  @include customVerticalScroll;
+
+  ::selection {
+    background-color: $primary;
+    color: $white-bg;
+    text-shadow: none;
+  }
+}
+
+.content {
+  // max-width: 1800px;
+  height: 100%;
+  width: 100%;
+  margin: 0 auto;
+}
+
+h1,
+h2 {
+  font-family: $header-family;
+}
+
+h1 {
+  font-size: 1.5rem;
+  @include laptop {
+    font-size: 3.9rem;
+    line-height: 73.2px;
+  }
+
+  color: $dark-text;
+}
+
+h2 {
+  font-size: 1.2rem;
+  @include laptop {
+    font-size: 3rem;
+    line-height: 57.6px;
+  }
+
+  color: $dark-text;
+}
+
+a {
+  color: $dark-text-3;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+li {
+  list-style-type: none;
+}
+
+svg {
+  color: $primary;
+}
+
+main {
+  min-height: 70vh;
+  width: 100%;
+}
+
+button {
+  cursor: pointer;
+}
