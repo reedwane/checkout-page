@@ -1,15 +1,68 @@
 import Header from "components/header";
 import Navbar from "components/navbar";
 import Head from "next/head";
-import Image from "next/image";
 import { SlCreditCard } from "react-icons/sl";
 import { BsCheckCircleFill, BsCircleFill } from "react-icons/bs";
 import { useState } from "react";
 import classNames from "classnames";
+import { usePaystackPayment } from "react-paystack";
+// import useSWR from "swr";
+
+const fetcher = (query) =>
+  fetch("/api/graphql", {
+    method: "POST",
+    headers: {
+      "Content-type": "application/json",
+    },
+    body: JSON.stringify({ query }),
+  })
+    .then((res) => res.json())
+    .then((json) => json.data)
+    .catch((err) => console.log(err));
+
+// const useFetch = () => {
+//   const { data, error } = useSWR("{ greetings }", fetcher);
+
+//   return { data, isLoading: !data && !error, error };
+// };
 
 export default function Home() {
   const [paymentType, setPaymentType] = useState("credit");
   let iconSize = 20;
+
+  const config = {
+    reference: new Date().getTime().toString(),
+    email: "user@example.com",
+    amount: 20000,
+    publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY,
+  };
+
+  const handleGraph = async (e) => {
+    e.preventDefault();
+
+    const data = await fetcher("{ greetings }");
+    console.log(data);
+  };
+
+  const onSuccess = (reference) => {
+    console.log(reference);
+
+    (async () => {
+      const data = await fetcher("{ greetings }");
+      console.log(data);
+    })();
+  };
+
+  const onClose = () => {
+    console.log("closed");
+  };
+
+  const initializePayment = usePaystackPayment(config);
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+    initializePayment(onSuccess, onClose);
+  };
   return (
     <div>
       <Head>
@@ -25,7 +78,7 @@ export default function Home() {
         <Header />
         <Navbar />
 
-        <form className="content" onSubmit={() => {}}>
+        <form className="content">
           <div>
             <div className="payment-type segment">
               <h2 className="heading">Choose Payment</h2>
@@ -35,7 +88,10 @@ export default function Home() {
                   active: paymentType === "credit",
                 })}
               >
-                <SlCreditCard size={iconSize} /> Credit and Debit Card{" "}
+                <span className="flex-btw">
+                  <SlCreditCard size={iconSize} /> Credit and Debit Card
+                </span>
+
                 {paymentType === "credit" ? (
                   <BsCheckCircleFill size={iconSize + 10} className="check" />
                 ) : null}
@@ -46,7 +102,10 @@ export default function Home() {
                   active: paymentType === "paystack",
                 })}
               >
-                <BsCircleFill size={iconSize} /> <span>Paystack</span>{" "}
+                <span className="flex-btw">
+                  <BsCircleFill size={iconSize} />
+                  Paystack
+                </span>
                 {paymentType === "paystack" ? (
                   <BsCheckCircleFill size={iconSize + 10} className="check" />
                 ) : null}
@@ -161,8 +220,12 @@ export default function Home() {
             </div>
           </div>
           <div className="buttons">
-            <button className="back">BACK</button>
-            <button className="order">Place Order</button>
+            <button className="back" onClick={handleGraph}>
+              BACK
+            </button>
+            <button className="order" onClick={onSubmit}>
+              Place Order
+            </button>
           </div>
         </form>
       </main>
