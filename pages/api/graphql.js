@@ -13,13 +13,12 @@ export default createYoga({
   schema: createSchema({
     typeDefs: /* GraphQL */ `
       type Query {
-        greetings: String
+        query: String
       }
     `,
     resolvers: {
       Query: {
-        greetings: () =>
-          "This is the `greetings` field of the root `Query` type",
+        query: () => "sample query for graphql",
       },
     },
   }),

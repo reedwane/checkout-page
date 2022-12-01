@@ -6,6 +6,18 @@ import { BsCheckCircleFill, BsCircleFill } from "react-icons/bs";
 import { useState } from "react";
 import classNames from "classnames";
 import { usePaystackPayment } from "react-paystack";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+
+const schema = yup
+  .object({
+    name: yup.string().required(),
+    cardNumber: yup.number().positive().integer().required(),
+    // expires: yup.date(),
+    cvv: yup.number().positive().integer().required(),
+  })
+  .required();
 
 const fetcher = (query) =>
   fetch("/api/graphql", {
@@ -34,9 +46,17 @@ export default function Home() {
   const handleGraph = async (e) => {
     e.preventDefault();
 
-    const data = await fetcher("{ greetings }");
+    const data = await fetcher("{ query }");
     console.log(data);
   };
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema),
+  });
 
   const onSuccess = (reference) => {
     console.log(reference);
@@ -54,9 +74,10 @@ export default function Home() {
   const initializePayment = usePaystackPayment(config);
 
   const onSubmit = (e) => {
-    e.preventDefault();
+    // e.preventDefault();
     initializePayment(onSuccess, onClose);
   };
+
   return (
     <div>
       <Head>
@@ -109,29 +130,22 @@ export default function Home() {
             <div className="payment-detail segment">
               <h2 className="heading">Payment Detail</h2>
               <label htmlFor="name">Name On Card</label>
-              <input type="text" name="name" id="name" placeholder="Pristia" />
+              <input {...register("name")} placeholder="Pristia" />
 
               <label htmlFor="cardNumber">Card Number</label>
               <input
-                type="number"
-                name="cardNumber"
-                id="cardNumber"
+                {...register("cardNumber")}
                 placeholder="0002010210201030"
               />
 
               <div className="flex-btw cols">
                 <div className="flex-btw paired">
                   <label htmlFor="expires">MM/YY</label>
-                  <input
-                    type="number"
-                    name="expires"
-                    id="expires"
-                    placeholder="05/2025"
-                  />
+                  <input {...register("expires")} placeholder="05/2025" />
                 </div>
                 <div className="paired flex-btw">
                   <label htmlFor="cvv">CVV</label>
-                  <input type="number" name="cvv" id="cvv" placeholder="123" />
+                  <input {...register("cvv")} placeholder="123" />
                 </div>
               </div>
 
@@ -217,7 +231,7 @@ export default function Home() {
             <button className="back" onClick={handleGraph}>
               BACK
             </button>
-            <button className="order" onClick={onSubmit}>
+            <button className="order" onClick={handleSubmit(onSubmit)}>
               Place Order
             </button>
           </div>
