@@ -62,7 +62,7 @@ export default function Home() {
     console.log(reference);
 
     (async () => {
-      const data = await fetcher("{ greetings }");
+      const data = await fetcher("{ query }");
       console.log(data);
     })();
   };
