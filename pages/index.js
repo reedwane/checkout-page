@@ -6,7 +6,6 @@ import { BsCheckCircleFill, BsCircleFill } from "react-icons/bs";
 import { useState } from "react";
 import classNames from "classnames";
 import { usePaystackPayment } from "react-paystack";
-// import useSWR from "swr";
 
 const fetcher = (query) =>
   fetch("/api/graphql", {
@@ -20,21 +19,16 @@ const fetcher = (query) =>
     .then((json) => json.data)
     .catch((err) => console.log(err));
 
-// const useFetch = () => {
-//   const { data, error } = useSWR("{ greetings }", fetcher);
-
-//   return { data, isLoading: !data && !error, error };
-// };
-
 export default function Home() {
   const [paymentType, setPaymentType] = useState("credit");
   let iconSize = 20;
+  const key = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY;
 
   const config = {
     reference: new Date().getTime().toString(),
     email: "user@example.com",
     amount: 20000,
-    publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY,
+    publicKey: key,
   };
 
   const handleGraph = async (e) => {
